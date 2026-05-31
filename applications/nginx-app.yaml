@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-app
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/rajkumar25maurya/app_of_apps.git
+    targetRevision: main
+    path: nginx
+
+  destination:
+    server: https://192.168.1.140:6443
+    namespace: nginx
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
