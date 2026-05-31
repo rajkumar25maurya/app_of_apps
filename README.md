@@ -46,23 +46,29 @@ The `nginx/nginx.yaml` manifest currently includes:
 - Keep the child application paths aligned with the folder names under this repository.
 
 
-repo: app_of_apps/
-  ├─ bootstrap/root-app.yaml
-  │    └─ Argo CD Application "root-app"
-  │         ├─ source: repo/path=applications
-  │         └─ dest: cluster=https://192.168.1.140:6443, namespace=argocd
-  └─ applications/
-       ├─ apache-app.yaml
-       │    └─ Argo CD Application "apache-app"
-       │         ├─ source: repo/path=apache
-       │         └─ dest: cluster=https://192.168.1.140:6443, namespace=apache
-       └─ nginx-app.yaml
-            └─ Argo CD Application "nginx-app"
-                 ├─ source: repo/path=nginx
-                 └─ dest: cluster=https://192.168.1.140:6443, namespace=nginx
+```mermaid
+flowchart TD
+  Root["root-app\nargocd namespace"]
+  Apps["repo/applications"]
+  ApacheApp["apache-app\nargocd namespace"]
+  NginxApp["nginx-app\nargocd namespace"]
+  ApacheSrc["repo/apache/"]
+  NginxSrc["repo/nginx/"]
+  Cluster["K8s cluster\nhttps://192.168.1.140:6443"]
+  ApacheNS["namespace: apache"]
+  NginxNS["namespace: nginx"]
+  NginxDeployment["Deployment nginx\nreplicas: 3"]
+  NginxService["Service nginx-svc\nNodePort 30091"]
 
-repo paths:
-  ├─ apache/      -> Apache Kubernetes manifests
-  └─ nginx/       -> Nginx Kubernetes manifests
-                     ├─ Deployment nginx (3 replicas)
-                     └─ Service nginx-svc (NodePort 30091)
+  Root --> Apps
+  Apps --> ApacheApp
+  Apps --> NginxApp
+  ApacheApp --> ApacheSrc
+  NginxApp --> NginxSrc
+  ApacheApp --> Cluster
+  NginxApp --> Cluster
+  ApacheApp --> ApacheNS
+  NginxApp --> NginxNS
+  NginxSrc --> NginxDeployment
+  NginxSrc --> NginxService
+  ```
