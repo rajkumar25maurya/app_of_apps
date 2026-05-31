@@ -44,3 +44,25 @@ The `nginx/nginx.yaml` manifest currently includes:
 - Adjust `image`, `replicas`, and `nodePort` settings as needed.
 - For production, consider using a `LoadBalancer` or Ingress resource instead of `NodePort`.
 - Keep the child application paths aligned with the folder names under this repository.
+
+
+repo: app_of_apps/
+  ├─ bootstrap/root-app.yaml
+  │    └─ Argo CD Application "root-app"
+  │         ├─ source: repo/path=applications
+  │         └─ dest: cluster=https://192.168.1.140:6443, namespace=argocd
+  └─ applications/
+       ├─ apache-app.yaml
+       │    └─ Argo CD Application "apache-app"
+       │         ├─ source: repo/path=apache
+       │         └─ dest: cluster=https://192.168.1.140:6443, namespace=apache
+       └─ nginx-app.yaml
+            └─ Argo CD Application "nginx-app"
+                 ├─ source: repo/path=nginx
+                 └─ dest: cluster=https://192.168.1.140:6443, namespace=nginx
+
+repo paths:
+  ├─ apache/      -> Apache Kubernetes manifests
+  └─ nginx/       -> Nginx Kubernetes manifests
+                     ├─ Deployment nginx (3 replicas)
+                     └─ Service nginx-svc (NodePort 30091)
